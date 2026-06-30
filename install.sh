@@ -7,7 +7,9 @@ CLAUDE_DIR="$HOME/.claude"
 SETTINGS="$CLAUDE_DIR/settings.json"
 
 echo ""
-echo "=== Claude Code Statusline インストーラー ==="
+echo "=== Claude Code Statusline インストーラー v3.0 ==="
+echo "    最新の Claude Code バージョンに対応済み"
+echo "    複数のAPIレスポンス形式に対応"
 echo ""
 
 # jq チェック

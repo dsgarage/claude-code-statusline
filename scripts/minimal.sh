@@ -4,6 +4,6 @@
 
 input=$(cat)
 
-USAGE=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
+USAGE=$(echo "$input" | jq -r '(.context_window.used_percentage // .context.used_percentage // .contextUsage.percentage // .usage.percentage // 0)' | cut -d. -f1)
 
 echo "Context: ${USAGE}%"

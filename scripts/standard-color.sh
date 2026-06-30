@@ -1,14 +1,23 @@
 #!/bin/bash
-# standard-color.sh - モデル + コンテキスト（色分け） + コスト
+# standard-color.sh - モデル + コンテキスト（色分け） + コスト v3.0
 # 表示例: [Opus] Context: 45% | $0.12
 #   0-50%: 緑 / 50-80%: 黄 / 80%+: 赤
 
 input=$(cat)
 
-MODEL=$(echo "$input" | jq -r '.model.display_name // "unknown"')
-USAGE=$(echo "$input" | jq -r '.context_window.used_percentage // 0')
+# モデル情報（複数のパスに対応）
+MODEL=$(echo "$input" | jq -r '.model.display_name // .model.name // .model // .modelName // "unknown"')
+if [[ "$MODEL" == *"opus"* ]] || [[ "$MODEL" == *"Opus"* ]]; then MODEL="Opus"
+elif [[ "$MODEL" == *"sonnet"* ]] || [[ "$MODEL" == *"Sonnet"* ]]; then MODEL="Sonnet"
+elif [[ "$MODEL" == *"haiku"* ]] || [[ "$MODEL" == *"Haiku"* ]]; then MODEL="Haiku"
+fi
+
+# コンテキスト使用率（複数パス対応）
+USAGE=$(echo "$input" | jq -r '(.context_window.used_percentage // .context.used_percentage // .contextUsage.percentage // .usage.percentage // 0)')
 USAGE_INT=$(echo "$USAGE" | cut -d. -f1)
-COST=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
+
+# コスト（複数パス対応）
+COST=$(echo "$input" | jq -r '(.cost.total_cost_usd // .costs.total // .totalCost // .cost // 0)')
 
 # コンテキスト使用率で色分け
 if [ "$USAGE_INT" -lt 50 ]; then

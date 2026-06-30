@@ -4,12 +4,12 @@
 
 input=$(cat)
 
-COST=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
-USAGE=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
-INPUT_TOKENS=$(echo "$input" | jq -r '.context_window.input_tokens // 0')
-OUTPUT_TOKENS=$(echo "$input" | jq -r '.context_window.output_tokens // 0')
-CACHE_CREATE=$(echo "$input" | jq -r '.context_window.cache_creation_tokens // 0')
-CACHE_READ=$(echo "$input" | jq -r '.context_window.cache_read_tokens // 0')
+COST=$(echo "$input" | jq -r '(.cost.total_cost_usd // .costs.total // .totalCost // .cost // 0)')
+USAGE=$(echo "$input" | jq -r '(.context_window.used_percentage // .context.used_percentage // .contextUsage.percentage // .usage.percentage // 0)' | cut -d. -f1)
+INPUT_TOKENS=$(echo "$input" | jq -r '(.context_window.input_tokens // .tokens.input // .inputTokens // 0)')
+OUTPUT_TOKENS=$(echo "$input" | jq -r '(.context_window.output_tokens // .tokens.output // .outputTokens // 0)')
+CACHE_CREATE=$(echo "$input" | jq -r '(.context_window.cache_creation_tokens // .tokens.cacheCreation // .cacheCreationTokens // 0)')
+CACHE_READ=$(echo "$input" | jq -r '(.context_window.cache_read_tokens // .tokens.cacheRead // .cacheReadTokens // 0)')
 
 # トークン数を K 表記に変換
 format_k() {
