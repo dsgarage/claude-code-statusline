@@ -16,15 +16,16 @@ Claude Code のステータスラインスクリプト集。コンテキスト�
 |-----------|--------|------|
 | `minimal` | `Context: 45%` | コンテキスト使用率のみ |
 | `standard` | `[Opus] Context: 45% \| $0.12` | モデル + コンテキスト + コスト |
-| `standard-color` | `[Opus] Context: 45% \| $0.12` | 上記のカラー版（使用率で色分け） |
+| `standard-color` | `[Opus] Context: 45% \| $0.12 \| 5h:34% 7d:61%` | 上記のカラー版（使用率で色分け + 5h/7d レート制限） |
 | `full` | `[Opus] Context: 45% \| $0.12 \| main \| +245 -89` | 全部入り |
-| `full-color` | 同上 | 全部入りカラー版 |
+| `full-color` | `[Opus] Context: 45% \| $0.12 \| main \| +245 -89 \| 5h:34% 7d:61%` | 全部入りカラー版（+ 5h/7d レート制限） |
 | `progress-bar` | `[Opus] [████████░░░░░░░░░░░░] 45% \| $0.12` | プログレスバー |
 | `git-focused` | `main \| M:3 U:1 S:2 \| Context: 45%` | Git 情報重視 |
 | `cost-tracker` | `$0.12 \| In:65K Out:12K Cache:20K \| Context: 45%` | コスト追跡重視 |
 | `tokens-detail` | `[Opus] In:65K Create:15K Read:5K Out:12K (48%) \| $0.12` | トークン内訳詳細 |
 | `multiline` | 2行: Git + プログレスバー | 2行表示 |
 | `compact` | `Op\|45%\|$0.12` | 最小幅（狭いターミナル向け） |
+| `rate-limit` | `[Opus] 5h:34%(残2.1h) 7d:61%(残3.2d) \| Context: 45%` | 5時間ブロック / 7日間ウィークリーのレート制限使用率 |
 
 ### カラー表示の色分けルール
 
@@ -37,6 +38,16 @@ Claude Code のステータスラインスクリプト集。コンテキスト�
 - $1 未満: 緑
 - $1-5: 黄
 - $5+: 赤
+
+**レート制限使用率（5h/7d）:**
+- コンテキスト使用率と同じ（0-49% 緑 / 50-79% 黄 / 80%+ 赤）
+
+### レート制限表示（5h/7d）について
+
+`rate-limit` に加え、`standard-color` / `full-color` も末尾に `5h:34% 7d:61%` を表示します。Claude Code が statusline に渡す `rate_limits` フィールド（5時間ブロック / 7日間ウィークリーの使用率とリセット時刻）を利用しています。
+
+- Pro / Max などサブスクリプション利用時のみ値が提供されます（API キー従量課金では表示されません）
+- セッション最初の応答が返るまでは値が無いため、その間はレート制限部分が非表示になります
 
 ## クイックセットアップ
 
@@ -120,6 +131,15 @@ Claude Code を再起動すると反映されます。
 |-----------|---|------|
 | `workspace.current_dir` | string | 現在の作業ディレクトリ |
 
+### レート制限（サブスクリプション利用時のみ）
+
+| フィールド | 型 | 説明 |
+|-----------|---|------|
+| `rate_limits.five_hour.used_percentage` | number | 5時間ブロックの使用率（0-100） |
+| `rate_limits.five_hour.resets_at` | number | 5時間ブロックのリセット時刻（Unix epoch 秒） |
+| `rate_limits.seven_day.used_percentage` | number | 7日間ウィークリーの使用率（0-100） |
+| `rate_limits.seven_day.resets_at` | number | 7日間ウィークリーのリセット時刻（Unix epoch 秒） |
+
 ### JSON 例
 
 ```json
@@ -143,6 +163,16 @@ Claude Code を再起動すると反映されます。
     "total_cost_usd": 0.1234,
     "total_lines_added": 245,
     "total_lines_removed": 89
+  },
+  "rate_limits": {
+    "five_hour": {
+      "used_percentage": 34.5,
+      "resets_at": 1765432100
+    },
+    "seven_day": {
+      "used_percentage": 61.2,
+      "resets_at": 1765876500
+    }
   }
 }
 ```
@@ -210,7 +240,8 @@ claude-code-statusline/
 │   ├── cost-tracker.sh     ← コスト追跡重視
 │   ├── tokens-detail.sh    ← トークン内訳詳細
 │   ├── multiline.sh        ← 2行表示
-│   └── compact.sh          ← 最小幅コンパクト
+│   ├── compact.sh          ← 最小幅コンパクト
+│   └── rate-limit.sh       ← 5h/7d レート制限使用率
 └── .gitignore
 ```
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.1.0] - 2026-08-16
+
+### 🚀 新機能
+- 5時間ブロック / 7日間ウィークリーのレート制限使用率表示に対応（#3）
+  - `scripts/rate-limit.sh` を新規追加（使用率 + リセットまでの残り時間を色分け表示）
+  - `full-color.sh` / `standard-color.sh` の末尾に `5h:xx% 7d:xx%` を追加
+  - Claude Code の statusline JSON `rate_limits` フィールドを利用
+  - サブスクリプション（Pro/Max 等）利用時のみ表示、値が無い場合は自動的に非表示
+
+### 📝 ドキュメント
+- README にレート制限表示の説明と `rate_limits` フィールド仕様を追記
+- インストーラーに `rate-limit` を追加
+
 ## [3.0.0] - 2026-06-06
 
 ### 🚀 新機能
