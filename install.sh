@@ -7,7 +7,7 @@ CLAUDE_DIR="$HOME/.claude"
 SETTINGS="$CLAUDE_DIR/settings.json"
 
 echo ""
-echo "=== Claude Code Statusline インストーラー v3.0 ==="
+echo "=== Claude Code Statusline インストーラー v3.1 ==="
 echo "    最新の Claude Code バージョンに対応済み"
 echo "    複数のAPIレスポンス形式に対応"
 echo ""
@@ -33,6 +33,7 @@ echo "  8) cost-tracker   - コスト追跡重視"
 echo "  9) tokens-detail  - トークン消費の内訳詳細"
 echo "  10) multiline     - 2行表示（Git + プログレスバー）"
 echo "  11) compact       - 最小幅コンパクト（狭いターミナル向け）"
+echo "  12) rate-limit    - 5h/7d レート制限使用率 + リセット残り時間"
 echo ""
 read -p "番号を選択 [3]: " CHOICE
 CHOICE=${CHOICE:-3}
@@ -49,6 +50,7 @@ case "$CHOICE" in
     9)  SCRIPT="tokens-detail.sh" ;;
     10) SCRIPT="multiline.sh" ;;
     11) SCRIPT="compact.sh" ;;
+    12) SCRIPT="rate-limit.sh" ;;
     *)  echo "無効な選択です"; exit 1 ;;
 esac
 
